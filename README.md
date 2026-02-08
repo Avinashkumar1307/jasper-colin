@@ -1,6 +1,8 @@
-# ProductHub
+# ProductHub — Full Stack CRUD Application
 
-A full-stack CRUD application for managing products with user authentication built using **Next.js**, **Express.js**, **MongoDB**, and **TypeScript**.
+A full-stack product management application with user authentication, built as part of the **Jasper Colin Full Stack Developer** assessment.
+
+Built with **Next.js**, **Express.js**, **MongoDB**, and **TypeScript**.
 
 ---
 
@@ -15,92 +17,6 @@ A full-stack CRUD application for managing products with user authentication bui
 
 ---
 
-## Project Structure
-
-```
-jasper-colin/
-├── client/                     # Next.js frontend
-│   ├── app/
-│   │   ├── components/
-│   │   │   ├── Navbar.tsx          # Navigation bar with auth state
-│   │   │   ├── ProductCard.tsx     # Product display card
-│   │   │   ├── ProductForm.tsx     # Reusable create/edit form
-│   │   │   └── ToastProvider.tsx   # Toast notification wrapper
-│   │   ├── login/
-│   │   │   └── page.tsx            # Login page
-│   │   ├── register/
-│   │   │   └── page.tsx            # Registration page
-│   │   ├── products/
-│   │   │   ├── page.tsx            # Products listing page
-│   │   │   ├── new/
-│   │   │   │   └── page.tsx        # Create new product
-│   │   │   └── [id]/
-│   │   │       └── edit/
-│   │   │           └── page.tsx    # Edit existing product
-│   │   ├── layout.tsx              # Root layout with providers
-│   │   ├── page.tsx                # Home (redirects to /products)
-│   │   └── globals.css             # Global styles
-│   ├── context/
-│   │   └── AuthContext.tsx         # Authentication context provider
-│   ├── lib/
-│   │   └── api.ts                  # Axios instance with JWT interceptor
-│   ├── middleware.ts               # Route protection middleware
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── server/                     # Express.js backend
-│   ├── config/
-│   │   └── db.ts                   # MongoDB connection setup
-│   ├── models/
-│   │   ├── User.ts                 # User model (username, hashed password)
-│   │   └── Product.ts              # Product model (name, description, price, category)
-│   ├── routes/
-│   │   ├── auth.ts                 # POST /register, POST /login
-│   │   └── products.ts            # CRUD endpoints for products
-│   ├── middleware/
-│   │   ├── auth.ts                 # JWT verification middleware
-│   │   └── rateLimiter.ts          # Rate limiting (100 req/15min API, 20 req/15min auth)
-│   ├── app.ts                      # Express app configuration
-│   ├── server.ts                   # Entry point with Node.js cluster support
-│   ├── .env                        # Environment variables
-│   ├── package.json
-│   └── tsconfig.json
-│
-├── package.json                # Root scripts (runs both client & server)
-└── .gitignore
-```
-
----
-
-## How It Works
-
-### Authentication Flow
-
-1. User registers or logs in via the frontend forms.
-2. Server validates credentials, hashes passwords with **bcryptjs**, and returns a **JWT** token.
-3. The token is stored in a browser cookie via `js-cookie`.
-4. `AuthContext` manages the logged-in user state across the app.
-5. `lib/api.ts` attaches the JWT to every outgoing API request via an Axios interceptor.
-6. Server middleware (`middleware/auth.ts`) verifies the token on protected routes.
-7. Client middleware (`middleware.ts`) redirects unauthenticated users away from protected pages.
-
-### Product CRUD
-
-| Action | Frontend Route        | API Endpoint           | Auth Required |
-| ------ | --------------------- | ---------------------- | ------------- |
-| List   | `/products`           | `GET /api/products`    | No            |
-| View   | `/products`           | `GET /api/products/:id`| No            |
-| Create | `/products/new`       | `POST /api/products`   | Yes           |
-| Edit   | `/products/[id]/edit` | `PUT /api/products/:id`| Yes           |
-| Delete | (from product card)   | `DELETE /api/products/:id` | Yes       |
-
-### Rate Limiting
-
-- **API routes**: 100 requests per 15 minutes per IP
-- **Auth routes**: 20 requests per 15 minutes per IP (prevents brute-force)
-
----
-
 ## Prerequisites
 
 - **Node.js** (v18 or higher)
@@ -109,7 +25,7 @@ jasper-colin/
 
 ---
 
-## Setup
+## Setup & Installation
 
 ### 1. Clone the repository
 
@@ -165,39 +81,162 @@ This starts:
 You can also run them separately:
 
 ```bash
-# Server only
-npm run server
-
-# Client only
-npm run client
+npm run server    # Server only
+npm run client    # Client only
 ```
 
 ---
 
-## API Endpoints
+## Project Structure
 
-### Auth
+```
+jasper-colin/
+├── client/                          # Next.js frontend
+│   ├── app/
+│   │   ├── components/
+│   │   │   ├── Navbar.tsx               # Navigation bar with auth state
+│   │   │   ├── ProductCard.tsx          # Product display card with edit/delete
+│   │   │   ├── ProductForm.tsx          # Reusable form for create & edit
+│   │   │   └── ToastProvider.tsx        # Toast notification wrapper
+│   │   ├── login/
+│   │   │   └── page.tsx                 # Login page
+│   │   ├── register/
+│   │   │   └── page.tsx                 # Registration page
+│   │   ├── products/
+│   │   │   ├── page.tsx                 # Products listing page
+│   │   │   ├── new/
+│   │   │   │   └── page.tsx             # Create new product
+│   │   │   └── [id]/
+│   │   │       └── edit/
+│   │   │           └── page.tsx         # Edit existing product
+│   │   ├── layout.tsx                   # Root layout with providers
+│   │   ├── page.tsx                     # Home (redirects to /products)
+│   │   └── globals.css                  # Global styles (TailwindCSS)
+│   ├── context/
+│   │   └── AuthContext.tsx              # Auth state management via React Context
+│   ├── lib/
+│   │   └── api.ts                       # Axios instance with JWT interceptor
+│   ├── middleware.ts                    # Auth Guard — protects frontend routes
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── server/                          # Express.js backend
+│   ├── config/
+│   │   └── db.ts                        # MongoDB/Mongoose connection
+│   ├── models/
+│   │   ├── User.ts                      # User schema (username, hashed password)
+│   │   └── Product.ts                   # Product schema (name, description, price, category)
+│   ├── routes/
+│   │   ├── auth.ts                      # POST /register & POST /login
+│   │   └── products.ts                  # Product CRUD endpoints
+│   ├── middleware/
+│   │   ├── auth.ts                      # JWT verification middleware
+│   │   └── rateLimiter.ts               # API & Auth rate limiters
+│   ├── app.ts                           # Express app config (CORS, routes, middleware)
+│   ├── server.ts                        # Entry point — Node.js Clustering
+│   ├── .env                             # Environment variables
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── package.json                     # Root scripts (runs client + server)
+└── .gitignore
+```
 
-| Method | Endpoint             | Description              |
-| ------ | -------------------- | ------------------------ |
-| POST   | `/api/auth/register` | Register a new user      |
-| POST   | `/api/auth/login`    | Login and receive a JWT  |
+---
 
-### Products
+## Task Completion Details
 
-| Method | Endpoint             | Description              | Auth     |
-| ------ | -------------------- | ------------------------ | -------- |
-| GET    | `/api/products`      | Get all products         | Public   |
-| GET    | `/api/products/:id`  | Get a single product     | Public   |
-| POST   | `/api/products`      | Create a product         | Required |
-| PUT    | `/api/products/:id`  | Update a product         | Required |
-| DELETE | `/api/products/:id`  | Delete a product         | Required |
+### Task 1: Setting Up the Environment
 
-### Health
+| Requirement | Implementation |
+|---|---|
+| Next.js project | `client/` — Next.js 16 with TypeScript and TailwindCSS |
+| Node.js server with Express.js | `server/` — Express.js 5 with TypeScript |
+| MongoDB connection via Mongoose | `server/config/db.ts` — connects using `MONGO_URI` from `.env` |
 
-| Method | Endpoint       | Description          |
-| ------ | -------------- | -------------------- |
-| GET    | `/api/health`  | Server status check  |
+---
+
+### Task 2: Basic CRUD Application
+
+#### Backend — API Routes
+
+| Method | Endpoint | Description | File |
+|---|---|---|---|
+| POST | `/api/products` | Create a new product (name, description, price, category) | `server/routes/products.ts` |
+| GET | `/api/products` | Retrieve all products | `server/routes/products.ts` |
+| GET | `/api/products/:id` | Retrieve a single product by ID | `server/routes/products.ts` |
+| PUT | `/api/products/:id` | Update a product by ID | `server/routes/products.ts` |
+| DELETE | `/api/products/:id` | Delete a product by ID | `server/routes/products.ts` |
+
+#### Rate Limiting (`server/middleware/rateLimiter.ts`)
+
+| Limiter | Limit | Applied To |
+|---|---|---|
+| `apiLimiter` | 100 requests per 15 minutes per IP | All `/api` routes |
+| `authLimiter` | 20 requests per 15 minutes per IP | `/api/auth` routes (prevents brute-force) |
+
+#### Frontend — Product Pages
+
+| Feature | Route | File |
+|---|---|---|
+| Display product list | `/products` | `client/app/products/page.tsx` |
+| Add new product form | `/products/new` | `client/app/products/new/page.tsx` |
+| Edit product form | `/products/[id]/edit` | `client/app/products/[id]/edit/page.tsx` |
+| Delete product | (button on each ProductCard) | `client/app/components/ProductCard.tsx` |
+
+---
+
+### Task 3: Authentication & Authorization
+
+#### Backend — Node Clustering (`server/server.ts`)
+
+The server uses the Node.js `cluster` module to fork worker processes based on available CPU cores. The primary process manages workers and automatically restarts any worker that exits unexpectedly.
+
+#### Backend — JWT Authentication
+
+| Method | Endpoint | Description | File |
+|---|---|---|---|
+| POST | `/api/auth/register` | Register with username & password | `server/routes/auth.ts` |
+| POST | `/api/auth/login` | Login and receive a JWT token | `server/routes/auth.ts` |
+
+- Passwords are hashed using **bcryptjs** (10 salt rounds) before storing in the database.
+- JWT tokens are signed with `JWT_SECRET` and expire after **7 days**.
+
+#### Backend — Protected Route Middleware (`server/middleware/auth.ts`)
+
+The `protect` middleware verifies the JWT from the `Authorization: Bearer <token>` header. Only authenticated users can access:
+
+- `POST /api/products` (create)
+- `PUT /api/products/:id` (update)
+- `DELETE /api/products/:id` (delete)
+
+Public routes (no auth required):
+
+- `GET /api/products` (list all)
+- `GET /api/products/:id` (view one)
+
+#### Frontend — Login & Registration
+
+| Page | Route | Features |
+|---|---|---|
+| Login | `/login` | Username/password form, error handling, redirect on success |
+| Register | `/register` | Username/password with confirm password, validation (min 3 chars username, min 6 chars password) |
+
+#### Frontend — JWT Storage (`client/context/AuthContext.tsx` & `client/lib/api.ts`)
+
+- JWT token is stored securely in **browser cookies** using `js-cookie` (7-day expiry).
+- `AuthContext` provides `login`, `register`, and `logout` functions across the app.
+- `lib/api.ts` uses an Axios **request interceptor** to automatically attach the JWT token to every API request.
+- A **response interceptor** handles `401` errors by clearing cookies and redirecting to `/login`.
+
+#### Frontend — Auth Guard (`client/middleware.ts`)
+
+Next.js middleware protects frontend routes so only authenticated users can access:
+
+- `/products/new` (create product page)
+- `/products/[id]/edit` (edit product page)
+
+Unauthenticated users are redirected to `/login`. Already-authenticated users are redirected away from `/login` and `/register` to `/products`.
 
 ---
 
@@ -205,28 +244,31 @@ npm run client
 
 ### User
 
-| Field    | Type   | Constraints                    |
-| -------- | ------ | ------------------------------ |
-| username | String | Required, unique, min 3 chars  |
-| password | String | Required, hashed, min 6 chars  |
+| Field | Type | Constraints |
+|---|---|---|
+| username | String | Required, unique, min 3 characters |
+| password | String | Required, hashed with bcrypt, min 6 characters |
+| createdAt | Date | Auto-generated |
+| updatedAt | Date | Auto-generated |
 
 ### Product
 
-| Field       | Type   | Constraints                         |
-| ----------- | ------ | ----------------------------------- |
-| name        | String | Required                            |
-| description | String | Optional                            |
-| price       | Number | Required, min 0                     |
-| category    | String | Optional, default "Uncategorized"   |
-
-Both models include automatic `createdAt` and `updatedAt` timestamps.
+| Field | Type | Constraints |
+|---|---|---|
+| name | String | Required |
+| description | String | Optional |
+| price | Number | Required, min 0 |
+| category | String | Optional, defaults to "Uncategorized" |
+| createdAt | Date | Auto-generated |
+| updatedAt | Date | Auto-generated |
 
 ---
 
-## Security
+## Security Features
 
 - Passwords hashed with **bcryptjs** (10 salt rounds)
 - JWT tokens expire after **7 days**
 - CORS restricted to `http://localhost:3000`
 - Rate limiting on all API and auth routes
-- Protected routes on both client and server side
+- Protected routes on both client (Auth Guard) and server (JWT middleware)
+- Automatic token cleanup on `401` responses
