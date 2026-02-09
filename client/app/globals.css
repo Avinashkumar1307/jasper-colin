@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    @apply bg-linear-to-br from-slate-50 to-gray-100 dark:from-gray-950 dark:to-slate-900 min-h-screen;
+  }
+}
